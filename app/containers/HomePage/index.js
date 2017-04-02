@@ -9,13 +9,15 @@ import Helmet from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
+import { Grid, Row, Column, Image } from 'react-bootstrap';
+import { Link } from 'react-router';
 
 import { makeSelectRepos, makeSelectLoading, makeSelectError } from 'containers/App/selectors';
 import H2 from 'components/H2';
 import ReposList from 'components/ReposList';
 import AtPrefix from './AtPrefix';
 import CenteredSection from './CenteredSection';
-import Form from './Form';
+import MessagingLogo from './MessagingLogo';
 import Input from './Input';
 import Section from './Section';
 import messages from './messages';
@@ -44,9 +46,9 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     return (
       <article>
         <Helmet
-          title="Home Page"
+          title="Home"
           meta={[
-            { name: 'description', content: 'A React.js Boilerplate application homepage' },
+            { name: 'description', content: 'The home of uSquam' },
           ]}
         />
         <div>
@@ -58,27 +60,33 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
               <FormattedMessage {...messages.startProjectMessage} />
             </p>
           </CenteredSection>
-          <Section>
+          <CenteredSection>
             <H2>
               <FormattedMessage {...messages.trymeHeader} />
             </H2>
-            <Form onSubmit={this.props.onSubmitForm}>
-              <label htmlFor="username">
-                <FormattedMessage {...messages.trymeMessage} />
-                <AtPrefix>
-                  <FormattedMessage {...messages.trymeAtPrefix} />
-                </AtPrefix>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="mxstbr"
-                  value={this.props.username}
-                  onChange={this.props.onChangeUsername}
-                />
-              </label>
-            </Form>
-            <ReposList {...reposListProps} />
-          </Section>
+            Send a message to <b>@uSquamBot</b> on your favourite messaging platform
+
+            <Section>
+              <Link href="https://web.telegram.org/#/im?p=@usquam_bot">
+                <MessagingLogo src="https://telegram.org/img/t_logo.png" alt="Telegram" />
+              </Link>
+              <Link href="https://slack.com">
+                <MessagingLogo src="http://diylogodesigns.com/blog/wp-content/uploads/2016/02/Slack-App-app-logo-png.png" alt="Slack" />
+              </Link>
+              <Link href="https://www.facebook.com">
+                <MessagingLogo src="http://seeklogo.com/images/F/facebook-messenger-logo-1B1179FB01-seeklogo.com.png" alt="Facebook" />
+              </Link>
+              <Link href="https://www.google.com">
+                <MessagingLogo src="https://upload.wikimedia.org/wikipedia/commons/f/fe/Hangouts_Icon.png" alt="Hangouts" />
+              </Link>
+              <Link href="https://www.google.com">
+                <MessagingLogo src="https://lh3.googleusercontent.com/S8DKhY39f1jpVy1-JV3qpI_ftuJwJnKjNbRhrVRGi-MQjr6i73JQI3-dmkQ93E0Jb4hT=w300" alt="Allo" />
+              </Link>
+              <Link href="https://www.discord.com">
+                <MessagingLogo src="https://discordapp.com/assets/2c21aeda16de354ba5334551a883b481.png" alt="Discord" />
+              </Link>
+            </Section>
+          </CenteredSection>
         </div>
       </article>
     );

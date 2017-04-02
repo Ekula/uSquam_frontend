@@ -7,23 +7,19 @@ import { defineMessages } from 'react-intl';
 
 export default defineMessages({
   startProjectHeader: {
-    id: 'boilerplate.containers.HomePage.start_project.header',
-    defaultMessage: 'Start your next react project in seconds',
+    id: 'usquam.containers.HomePage.start_project.header',
+    defaultMessage: 'Procrastinate productively, anywhere and anytime',
   },
   startProjectMessage: {
-    id: 'boilerplate.containers.HomePage.start_project.message',
-    defaultMessage: 'A highly scalable, offline-first foundation with the best DX and a focus on performance and best practices',
+    id: 'usquam.containers.HomePage.start_project.message',
+    defaultMessage: 'uSquam is a crowdsourcing platform focusing on full flexibility and easy access such that you can use any spare minute to do some good and earn a buck or two while your at it.',
   },
   trymeHeader: {
-    id: 'boilerplate.containers.HomePage.tryme.header',
+    id: 'usquam.containers.HomePage.tryme.header',
     defaultMessage: 'Try me!',
   },
   trymeMessage: {
-    id: 'boilerplate.containers.HomePage.tryme.message',
-    defaultMessage: 'Show Github repositories by',
-  },
-  trymeAtPrefix: {
-    id: 'boilerplate.containers.HomePage.tryme.atPrefix',
-    defaultMessage: '@',
+    id: 'usquam.containers.HomePage.tryme.message',
+    defaultMessage: 'Send a message to uSquam on your favourite messaging platform',
   },
 });

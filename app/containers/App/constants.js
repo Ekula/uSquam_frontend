@@ -9,7 +9,19 @@
  * export const YOUR_ACTION_CONSTANT = 'yourproject/YourContainer/YOUR_ACTION_CONSTANT';
  */
 
+export const DEFAULT_LOCALE = 'en';
+
 export const LOAD_REPOS = 'boilerplate/App/LOAD_REPOS';
 export const LOAD_REPOS_SUCCESS = 'boilerplate/App/LOAD_REPOS_SUCCESS';
 export const LOAD_REPOS_ERROR = 'boilerplate/App/LOAD_REPOS_ERROR';
-export const DEFAULT_LOCALE = 'en';
+
+
+
+
+export const GET_DATA = 'usquam/App/GET_DATA';
+export const GET_DATA_SUCCESS = 'usquam/App/GET_DATA_SUCCESS';
+export const GET_DATA_ERROR = 'usquam/App/GET_DATA_ERROR';
+
+export const REGISTER = 'usquam/App/REGISTER';
+export const REGISTER_SUCCESS = 'usquam/App/REGISTER_SUCCESS';
+export const REGISTER_ERROR = 'usquam/App/REGISTER_ERROR';

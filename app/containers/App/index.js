@@ -14,6 +14,9 @@ import Header from 'components/Header';
 import Footer from 'components/Footer';
 import withProgressBar from 'components/ProgressBar';
 
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/css/bootstrap-theme.css';
+
 const AppWrapper = styled.div`
   max-width: calc(768px + 16px * 2);
   margin: 0 auto;
@@ -25,7 +28,7 @@ const AppWrapper = styled.div`
 
 export function App(props) {
   return (
-    <AppWrapper>
+    <div>
       <Helmet
         titleTemplate="%s - uSquam"
         defaultTitle="uSquam: Procrastinate productively, anywhere and anytime"
@@ -35,8 +38,10 @@ export function App(props) {
       />
       <Header />
       {React.Children.toArray(props.children)}
-      <Footer />
-    </AppWrapper>
+      <AppWrapper>
+        <Footer />
+      </AppWrapper>
+    </div>
   );
 }
 
