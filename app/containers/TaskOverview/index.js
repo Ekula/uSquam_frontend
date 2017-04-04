@@ -49,7 +49,7 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
 
         <Grid>
           <Row>
-            <Col xs={6} md={4}>
+            <Col xs={12} md={4}>
               <h1>Tasks</h1>
               <ListGroup>
                 { tasks.length === 0 && <ListGroupItem disabled>No tasks found</ListGroupItem>}
