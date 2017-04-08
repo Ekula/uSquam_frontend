@@ -10,11 +10,10 @@ import Helmet from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 import { fromJS } from 'immutable';
 import { createStructuredSelector } from 'reselect';
-import { Grid, Row, Col, ListGroup, ListGroupItem, FormGroup, FormControl, ControlLabel, HelpBlock, Checkbox, Button, ButtonToolbar, Form } from 'react-bootstrap';
+import { Grid, Row, Col, ListGroup, ListGroupItem, FormGroup, FormControl, ControlLabel, HelpBlock, Checkbox, Button, ButtonToolbar, Form, Modal, } from 'react-bootstrap';
 import makeSelectTaskOverview from './selectors';
 import { getTasks } from './actions';
 import messages from './messages';
-
 
 export class TaskOverview extends React.Component { // eslint-disable-line react/prefer-stateless-function
   constructor(props) {
@@ -161,9 +160,6 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
             </Col>
           </Row>
         </Grid>
-
-
-
         <p> {error} </p>
       </div>
     );

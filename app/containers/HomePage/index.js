@@ -9,14 +9,14 @@ import Helmet from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { Grid, Row, Column, Image } from 'react-bootstrap';
+import { Grid, Row, Column, Image, Carousel } from 'react-bootstrap';
 import { Link } from 'react-router';
 
 import { makeSelectRepos, makeSelectLoading, makeSelectError } from 'containers/App/selectors';
 import H2 from 'components/H2';
 import ReposList from 'components/ReposList';
 import AtPrefix from './AtPrefix';
-import CenteredSection from './CenteredSection';
+import CenteredSection, { CenteredDiv } from './CenteredSection';
 import MessagingLogo from './MessagingLogo';
 import Input from './Input';
 import Section from './Section';
@@ -24,6 +24,12 @@ import messages from './messages';
 import { loadRepos } from '../App/actions';
 import { changeUsername } from './actions';
 import { makeSelectUsername } from './selectors';
+
+import mob from './mobile_selfie.png';
+import web from './usquam_web.jpg';
+import lecture from './class.jpg';
+import train from './train.jpg';
+
 
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   /**
@@ -36,12 +42,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
   }
 
   render() {
-    const { loading, error, repos } = this.props;
-    const reposListProps = {
-      loading,
-      error,
-      repos,
-    };
+
 
     return (
       <article>
@@ -87,6 +88,29 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
               </Link>
             </Section>
           </CenteredSection>
+
+          <Carousel>
+            <Carousel.Item>
+              <CenteredDiv>
+                <img height={500} alt="Mobile usage" src={mob} />
+              </CenteredDiv>
+            </Carousel.Item>
+            <Carousel.Item>
+              <CenteredDiv>
+                <img height={500} alt="Web usage" src={web} />
+              </CenteredDiv>
+            </Carousel.Item>
+            <Carousel.Item>
+              <CenteredDiv>
+                <img height={500} alt="In class" src={lecture} />
+              </CenteredDiv>
+            </Carousel.Item>
+            <Carousel.Item>
+              <CenteredDiv>
+                <img height={500} alt="While waiting" src={train} />
+              </CenteredDiv>
+            </Carousel.Item>
+          </Carousel>
         </div>
       </article>
     );

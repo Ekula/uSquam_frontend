@@ -39,14 +39,6 @@ export default function createRoutes(store) {
         importModules.catch(errorLoading);
       },
     }, {
-      path: '/features',
-      name: 'features',
-      getComponent(nextState, cb) {
-        import('containers/FeaturePage')
-          .then(loadModule(cb))
-          .catch(errorLoading);
-      },
-    }, {
       path: '/tasks',
       name: 'taskOverview',
       getComponent(nextState, cb) {
@@ -60,6 +52,30 @@ export default function createRoutes(store) {
 
         importModules.then(([reducer, sagas, component]) => {
           injectReducer('taskOverview', reducer.default);
+          injectSagas(sagas.default);
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    }, {
+      path: '/results',
+      name: 'results',
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          import('containers/TaskOverview/reducer'),
+          import('containers/TaskOverview/sagas'),
+          import('containers/Results/reducer'),
+          import('containers/Results/sagas'),
+          import('containers/Results'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([taskReducer, taskSagas, reducer, sagas, component]) => {
+          injectReducer('taskOverview', taskReducer.default);
+          injectSagas(taskSagas.default);
+          injectReducer('results', reducer.default);
           injectSagas(sagas.default);
           renderRoute(component);
         });
