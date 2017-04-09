@@ -9,7 +9,7 @@ import Helmet from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { Grid, Row, Column, Image, Carousel } from 'react-bootstrap';
+import { Grid, Row, Col, Image, Carousel } from 'react-bootstrap';
 import { Link } from 'react-router';
 
 import { makeSelectRepos, makeSelectLoading, makeSelectError } from 'containers/App/selectors';
@@ -29,6 +29,13 @@ import mob from './mobile_selfie.png';
 import web from './usquam_web.jpg';
 import lecture from './class.jpg';
 import train from './train.jpg';
+
+import telegram from './telegram.png';
+import slack from './slack.png';
+import fb from './fb.png';
+import hangouts from './hangouts.png';
+import allo from './allo.png';
+import discord from './discord.png';
 
 
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
@@ -67,26 +74,34 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
             </H2>
             Send a message to <b>@uSquamBot</b> on your favourite messaging platform
 
-            <Section>
-              <Link href="https://web.telegram.org/#/im?p=@usquam_bot">
-                <MessagingLogo src="https://telegram.org/img/t_logo.png" alt="Telegram" />
-              </Link>
-              <Link href="https://slack.com">
-                <MessagingLogo src="http://diylogodesigns.com/blog/wp-content/uploads/2016/02/Slack-App-app-logo-png.png" alt="Slack" />
-              </Link>
-              <Link href="https://www.facebook.com">
-                <MessagingLogo src="http://seeklogo.com/images/F/facebook-messenger-logo-1B1179FB01-seeklogo.com.png" alt="Facebook" />
-              </Link>
-              <Link href="https://www.google.com">
-                <MessagingLogo src="https://upload.wikimedia.org/wikipedia/commons/f/fe/Hangouts_Icon.png" alt="Hangouts" />
-              </Link>
-              <Link href="https://www.google.com">
-                <MessagingLogo src="https://lh3.googleusercontent.com/S8DKhY39f1jpVy1-JV3qpI_ftuJwJnKjNbRhrVRGi-MQjr6i73JQI3-dmkQ93E0Jb4hT=w300" alt="Allo" />
-              </Link>
-              <Link href="https://www.discord.com">
-                <MessagingLogo src="https://discordapp.com/assets/2c21aeda16de354ba5334551a883b481.png" alt="Discord" />
-              </Link>
-            </Section>
+            {/*Todo:*/}
+            {/*- Update homepage to make it clear for both workers & requesters*/}
+            {/*- Login -> store requester id, get only tasks/data/results for that id*/}
+            {/*Creation of datasource*/}
+            {/*(optional) modify task/data source*/}
+            
+            <Row>
+              <Col xs={12}>
+                <Link href="https://web.telegram.org/#/im?p=@usquam_bot">
+                  <MessagingLogo src={telegram} title="Telegram" alt="Telegram" />
+                </Link>
+                <Link href="https://slack.com">
+                  <MessagingLogo src={slack} title="Slack" alt="Slack" />
+                </Link>
+                <Link href="https://www.facebook.com">
+                  <MessagingLogo src={fb} title="Facebook" alt="Facebook" />
+                </Link>
+                <Link href="https://hangouts.google.com">
+                  <MessagingLogo src={hangouts} title="Hangouts" alt="Hangouts" />
+                </Link>
+                <Link href="https://allo.google.com/">
+                  <MessagingLogo src={allo} title="Allo" alt="Allo" />
+                </Link>
+                <Link href="https://www.discord.com">
+                  <MessagingLogo src={discord} title="Discord" alt="Discord" />
+                </Link>
+              </Col>
+            </Row>
           </CenteredSection>
 
           <Carousel>

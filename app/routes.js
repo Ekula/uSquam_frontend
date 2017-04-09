@@ -83,6 +83,26 @@ export default function createRoutes(store) {
         importModules.catch(errorLoading);
       },
     }, {
+      path: '/data',
+      name: 'data',
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          import('containers/Data/reducer'),
+          import('containers/Data/sagas'),
+          import('containers/Data'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([reducer, sagas, component]) => {
+          injectReducer('data', reducer.default);
+          injectSagas(sagas.default);
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    }, {
       path: '*',
       name: 'notfound',
       getComponent(nextState, cb) {

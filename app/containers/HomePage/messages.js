@@ -12,7 +12,7 @@ export default defineMessages({
   },
   startProjectMessage: {
     id: 'usquam.containers.HomePage.start_project.message',
-    defaultMessage: 'uSquam is a crowdsourcing platform focusing on full flexibility and easy access such that you can use any spare minute to do some good and earn a buck or two while your at it.',
+    defaultMessage: 'uSquam is a crowdsourcing platform focusing on full flexibility and easy access such that you can use any spare minute to do some good and earn a buck or two while you\'re at it.',
   },
   trymeHeader: {
     id: 'usquam.containers.HomePage.tryme.header',

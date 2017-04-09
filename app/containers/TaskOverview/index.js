@@ -7,20 +7,21 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
-import { FormattedMessage } from 'react-intl';
 import { fromJS } from 'immutable';
 import { createStructuredSelector } from 'reselect';
-import { Grid, Row, Col, ListGroup, ListGroupItem, FormGroup, FormControl, ControlLabel, HelpBlock, Checkbox, Button, ButtonToolbar, Form, Modal, } from 'react-bootstrap';
+import { Grid, Row, Col, ListGroup, ListGroupItem, FormGroup, FormControl, ControlLabel, HelpBlock, Checkbox, Button, ButtonToolbar, Form, Modal, Table, } from 'react-bootstrap';
 import makeSelectTaskOverview from './selectors';
-import { getTasks } from './actions';
-import messages from './messages';
+import { getTasks, createTask } from './actions';
 
 export class TaskOverview extends React.Component { // eslint-disable-line react/prefer-stateless-function
   constructor(props) {
     super(props);
     this.state = {
-      selectedTask: {},
+      selectedTask: undefined,
     };
+
+    this.newTask = this.newTask.bind(this);
+    this.addQuestion = this.addQuestion.bind(this);
   }
 
   componentWillMount() {
@@ -31,6 +32,43 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
     const newTask = this.state.selectedTask;
     newTask[key] = val;
     this.setState({ selectedTask: newTask });
+  }
+  updateQuestion(idx, key, val) {
+    const newTask = this.state.selectedTask;
+    newTask.questions[idx][key] = val;
+    this.setState({ selectedTask: newTask });
+  }
+  addQuestion() {
+    const newTask = this.state.selectedTask;
+    newTask.questions.push({
+      message: '',
+      expected_type: 'TEXT',
+      suggestions: [],
+      question_data_idx: undefined,
+    });
+    this.setState({ selectedTask: newTask });
+  }
+
+  newTask() {
+    this.setState({
+      selectedTask: {
+        _id: {
+          $oid: 'new',
+        },
+        name: '',
+        data_collection_id: '',
+        reward: 10,
+        time_indication: 1,
+        questions: [
+          {
+            message: '',
+            expected_type: 'TEXT',
+            suggestions: [],
+            question_data_idx: undefined,
+          },
+        ],
+      },
+    });
   }
 
   render() {
@@ -44,7 +82,6 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
             { name: 'description', content: 'Description of TaskOverview' },
           ]}
         />
-        {/*<FormattedMessage {...messages.header} />*/}
 
         <Grid>
           <Row>
@@ -56,19 +93,19 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
                   tasks.map((task, idx) =>
                     <ListGroupItem
                       key={idx}
-                      onClick={() => { this.setState({ selectedTask: fromJS(task).toJS() }); console.log('ya') }}
-                      active={this.state.selectedTask._id && this.state.selectedTask._id['$oid'] === task._id['$oid']}
+                      onClick={() => { this.setState({ selectedTask: fromJS(task).toJS() }); }}
+                      active={selectedTask && selectedTask._id['$oid'] === task._id['$oid']}
                       bsStyle={task.active ? undefined : 'danger'}
                     >
                       {task.name}
-                      <Button className="pull-right" bsSize="small" bsStyle="danger">x</Button>
                     </ListGroupItem>
                   )
                 }
+                {/*{ selectedTask && selectedTask._id.$oid === 'new' && <ListGroupItem active>New task</ListGroupItem>}*/}
               </ListGroup>
 
               <ButtonToolbar>
-                <Button bsStyle="success">Add task</Button>
+                <Button bsStyle="success" onClick={this.newTask}>Add task</Button>
                 <Button bsStyle="info">Refresh</Button>
               </ButtonToolbar>
 
@@ -76,7 +113,7 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
 
             <Col xs={12} md={8}>
               <h1>Properties</h1>
-              { selectedTask._id &&
+              { selectedTask &&
               <form>
                 <FormGroup controlId="name" validationState={(selectedTask.name.length < 1) ? 'error' : 'success'} >
                   <ControlLabel>Name</ControlLabel>
@@ -104,7 +141,7 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
                   <ControlLabel>Data collection</ControlLabel>
                   <FormControl
                     type="text"
-                    value={selectedTask.data_collection_id['$oid']}
+                    value={selectedTask.data_collection_id['$oid'] || selectedTask.data_collection_id }
                     onChange={(x) => this.updateTask('data_collection_id', x.target.value)}
                   />
                   <FormControl.Feedback />
@@ -134,27 +171,53 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
 
                 <div>
                   <h2>Questions</h2>
-                  {
-                    selectedTask.questions.map((q, idx) =>
-                      <div key={idx}>
-                        <h3>Question {idx+1}</h3>
-                        <Form inline>
-                          <FormGroup controlId="message">
-                            <ControlLabel>Message</ControlLabel>
-                            {' '}
-                            <FormControl type="text" placeholder="Message" value={selectedTask.questions[idx].message} onChange={(x) => this.updateTask(`questions[${idx}].message`, x.target.value)} />
-                          </FormGroup>
-                          {' '}
-                          <FormGroup controlId="expectedType">
-                            <ControlLabel>Expected type</ControlLabel>
-                            {' '}
-                            <FormControl type="text" placeholder="Expected type" value={selectedTask.questions[idx].expected_type} onChange={(x) => this.updateTask(`questions[${idx}].expected_type`, x.target.value)} />
-                          </FormGroup>
-                        </Form>
-                      </div>
-                    )
-                  }
+                  <Button onClick={this.addQuestion}>Add question</Button>
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Question properties</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                      selectedTask.questions.map((q, idx) =>
+                        <tr key={idx}>
+                          <td>{idx + 1}</td>
+                          <td>
+                            <FormGroup controlId="message">
+                              <ControlLabel>Message</ControlLabel>
+                              <FormControl type="text" placeholder="Message" value={selectedTask.questions[idx].message} onChange={(x) => this.updateQuestion(idx, 'message', x.target.value)} />
+                            </FormGroup>
+                            <FormGroup controlId="expectedType">
+                              <ControlLabel>Expected type</ControlLabel>
+                              <FormControl componentClass="select" value={selectedTask.questions[idx].expected_type} onChange={(x) => this.updateQuestion(idx, 'expected_type', x.target.value)}>
+                                <option value="TEXT">TEXT</option>
+                                <option value="IMAGE">IMAGE</option>
+                              </FormControl>
+                            </FormGroup>
+                            <FormGroup controlId="data_id">
+                              <ControlLabel>Question data (optional)</ControlLabel>
+                              <FormControl type="number" placeholder="Index" value={selectedTask.questions[idx].question_data_idx} onChange={(x) => this.updateQuestion(idx, 'question_data_idx', x.target.value === '' ? undefined : Number(x.target.value))} />
+                              <HelpBlock>This number corresponds to the index in question data items of the specified data collection</HelpBlock>
+                            </FormGroup>
+                            <FormGroup controlId="data_id">
+                              <ControlLabel>Suggestions (optional)</ControlLabel>
+                              <FormControl type="text" placeholder="suggestion 1, suggestion 2, ..." value={selectedTask.questions[idx].suggestions.join(', ')} onChange={(x) => this.updateQuestion(idx, 'suggestions', x.target.value.split(', '))} />
+                              <HelpBlock>Suggestions will appear as buttons in chat services if available (Separate suggestions with commas)</HelpBlock>
+                            </FormGroup>
+                          </td>
+                        </tr>
+                      )
+                      }
+                    </tbody>
+                  </Table>
                 </div>
+                <br />
+                <ButtonToolbar>
+                  <Button onClick={() => this.props.createTask(fromJS(selectedTask).toJS())} bsStyle="success">{selectedTask._id.$oid === 'new' ? 'Submit task' : 'Save task'}</Button>
+                  <Button onClick={this.deleteTask} bsStyle="danger" disabled={selectedTask._id.$oid === 'new'}>Remove task</Button>
+                </ButtonToolbar>
               </form>
               }
             </Col>
@@ -168,6 +231,7 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
 
 TaskOverview.propTypes = {
   getTasks: PropTypes.func.isRequired,
+  createTask: PropTypes.func.isRequired,
   TaskOverview: PropTypes.object.isRequired,
 };
 
@@ -179,6 +243,9 @@ function mapDispatchToProps(dispatch) {
   return {
     getTasks: () => {
       dispatch(getTasks());
+    },
+    createTask: (task) => {
+      dispatch(createTask(task));
     },
     dispatch,
   };

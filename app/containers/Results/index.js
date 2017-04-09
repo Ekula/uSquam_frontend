@@ -42,21 +42,21 @@ export class Results extends React.Component { // eslint-disable-line react/pref
   }
 
   selectTask(id) {
-    this.setState({ selectedTaskId: id.value });
-    this.props.getSessions(id.value);
+    this.setState({ selectedTaskId: id ? id.value : undefined });
+    if (id) this.props.getSessions(id.value);
   }
 
   render() {
-
     const tasks = this.props.taskOverview.tasks || [];
     const taskOptions = tasks.map((x) => ({ value: x._id['$oid'], label: x.name }));
 
+    console.log(this.state.selectedTaskId);
     let tabContent;
     if (this.state.selectedTaskId === undefined) {
       tabContent = (
         <Col md={6} mdOffset={3}>
           <br />
-          <Alert bsStyle="warning"> <strong>No task selected!</strong> Please select a task to show the results from. </Alert>
+          <Alert bsStyle="warning"> <strong>No task selected!</strong> Please select a task to show the results of. </Alert>
           <br /><br /><br /><br /><br />
         </Col>);
     } else if (this.state.selectedTab === 0) {
@@ -66,7 +66,7 @@ export class Results extends React.Component { // eslint-disable-line react/pref
             <tr>
               <th>#</th>
               { this.props.Results.sessions.length > 0 && this.props.Results.sessions[0].answers.map((s, i) =>
-                <th>Answer {i + 1}</th>) }
+                <th key={i}>Answer {i + 1}</th>) }
             </tr>
           </thead>
           <tbody>
@@ -79,6 +79,7 @@ export class Results extends React.Component { // eslint-disable-line react/pref
           </tbody>
         </Table>);
     } else if (this.state.selectedTab === 1) {
+      console.log('aye');
       const totalTasks = this.props.Results.sessions.length;
       let finishedTasks = 0;
       this.props.Results.sessions.forEach((s) => { if (s.status === 'DONE') { finishedTasks += 1; } });
@@ -101,21 +102,21 @@ export class Results extends React.Component { // eslint-disable-line react/pref
         columns: ['index', 'value'],
         points,
       });
-      tabContent = <div>
+      tabContent = (<div>
         <Col lg={4}>
           <Table responsive hover>
             <tbody>
               <tr>
                 <td>Total sessions started:</td>
-                <td>{totalTasks}</td>
+                <td>{totalTasks || 0}</td>
               </tr>
               <tr>
                 <td>Total sessions completed:</td>
-                <td>{finishedTasks}</td>
+                <td>{finishedTasks || 0}</td>
               </tr>
               <tr>
                 <td>Total sessions incompleted:</td>
-                <td>{totalTasks - finishedTasks}</td>
+                <td>{totalTasks ? (totalTasks - finishedTasks) : 0}</td>
               </tr>
             </tbody>
           </Table>
@@ -132,7 +133,7 @@ export class Results extends React.Component { // eslint-disable-line react/pref
             </ChartContainer>
           </Resizable>
         </Col>
-      </div>;
+      </div>);
     } else if (this.state.selectedTab === 2) {
       tabContent = <Col md={8} mdOffset={2}><h2><i>Coming soon!</i></h2> <br /><br /><br /><br /><br /> </Col>;
     } else if (this.state.selectedTab === 3) {
@@ -150,7 +151,7 @@ export class Results extends React.Component { // eslint-disable-line react/pref
           <br />
           <FormGroup controlId="preview">
             <ControlLabel>Preview</ControlLabel>
-            <FormControl style={ {'min-height': '256px'} } componentClass="textarea" placeholder="textarea" readonly value={JSON.stringify(this.props.Results.sessions, null, 2)} />
+            <FormControl style={{ minHeight: '256px' }} componentClass="textarea" placeholder="textarea" readOnly value={JSON.stringify(this.props.Results.sessions, null, 2)} />
           </FormGroup>
         </Col>
       );
