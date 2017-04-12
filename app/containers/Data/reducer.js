@@ -13,7 +13,17 @@ import {
 
 const initialState = fromJS({
   data: [],
-  pipeline: {},
+  pipeline: {
+    crawlTwitter: {
+      results: [],
+    },
+    crawlFlickr: {
+      results: [],
+    },
+    crawlImgur: {
+      results: [],
+    },
+  },
 });
 
 function dataReducer(state = initialState, action) {
@@ -21,6 +31,10 @@ function dataReducer(state = initialState, action) {
     case GET_DATA_SUCCESS:
       return state.set('data', action.data).set('error', undefined);
     case GET_DATA_ERROR:
+      return state.set('error', action.error);
+    case CREATE_DATA_SUCCESS:
+      return state.update('data', (arr) => arr.concat(action.data)).set('error', undefined);
+    case CREATE_DATA_ERROR:
       return state.set('error', action.error);
     case GET_PIPELINE_DATA_SUCCESS:
       return state

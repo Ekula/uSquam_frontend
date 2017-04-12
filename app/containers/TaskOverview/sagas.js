@@ -1,6 +1,6 @@
 import { take, call, put, select, cancel, takeLatest } from 'redux-saga/effects';
 import { LOCATION_CHANGE } from 'react-router-redux';
-import { apiUrl } from 'config';
+import { apiUrl, hardcodedRequesterId } from 'config';
 import { GET_TASKS, CREATE_TASK } from './constants';
 import { getTasksError, getTasksSuccess, createTaskError, createTaskSuccess } from './actions';
 
@@ -11,7 +11,7 @@ import { makeSelectUsername } from 'containers/HomePage/selectors';
 // Individual exports for testing
 export function* getTasksSaga() {
   // Select username from store
-  const requesterId = '58cea5f40427242014ef1d79'; // yield select(makeSelectUsername());
+  const requesterId = hardcodedRequesterId; // yield select(makeSelectUsername());
   const requestURL = `${apiUrl}/tasks`;
 
   try {
@@ -26,7 +26,7 @@ export function* getTasksSaga() {
 // Individual exports for testing
 export function* createTaskSaga(action) {
   // Select username from store
-  const requesterId = '58cea5f40427242014ef1d79'; // yield select(makeSelectUsername());
+  const requesterId = hardcodedRequesterId; //yield select(makeSelectUsername());
   const requestURL = `${apiUrl}/tasks`;
 
   const task = action.task;

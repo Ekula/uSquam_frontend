@@ -1,6 +1,6 @@
 import { take, call, put, select, cancel, takeLatest } from 'redux-saga/effects';
 import { LOCATION_CHANGE } from 'react-router-redux';
-import { apiUrl, pipelineUrl } from 'config';
+import { apiUrl, pipelineUrl, hardcodedRequesterId } from 'config';
 import { GET_DATA, GET_PIPELINE_DATA, CREATE_DATA } from './constants';
 import { getDataError, getDataSuccess, getPipelineDataError, getPipelineDataSuccess, createDataError, createDataSuccess } from './actions';
 
@@ -10,7 +10,7 @@ import { makeSelectUsername } from 'containers/HomePage/selectors';
 // Individual exports for testing
 export function* getDataSaga() {
   // Select username from store
-  const requesterId = '58dd5bc49f2f16068742f7e0'; // yield select(makeSelectUsername()); // deploy: 58dd5bc49f2f16068742f7e0
+  const requesterId = hardcodedRequesterId; // yield select(makeSelectUsername()); // deploy: 58dd5bc49f2f16068742f7e0
   const requestURL = `${apiUrl}/requesters/${requesterId}/data`;
 
   try {
@@ -34,6 +34,27 @@ export function* getPipelineDataSaga(action) {
     yield put(getPipelineDataSuccess(action.service, data, requestURL));
   } catch (err) {
     yield put(getPipelineDataError(err));
+  }
+}
+
+// Individual exports for testing
+export function* createDataCollectionSaga(action) {
+  // Select username from store
+  const requesterId = '58cea6fa0427244eac32c484'; // yield select(makeSelectUsername());
+  const requestURL = `${apiUrl}/requesters/${requesterId}/data`;
+
+  const data = action.data;
+  data.requester_id = requesterId;
+
+  try {
+    // Call our request helper (see 'utils/request')
+    const dataRes = yield call(request, requestURL, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    yield put(createDataSuccess(dataRes));
+  } catch (err) {
+    yield put(createDataError(err));
   }
 }
 
@@ -62,8 +83,20 @@ export function* getPipelineDataData() {
   yield cancel(watcher);
 }
 
+export function* createDataCollectionData() {
+  // Watches actions and calls saga when one comes in.
+  // By using `takeLatest` only the result of the latest API call is applied.
+  // It returns task descriptor (just like fork) so we can continue execution
+  const watcher = yield takeLatest(CREATE_DATA, createDataCollectionSaga);
+
+  // Suspend execution until location changes
+  yield take(LOCATION_CHANGE);
+  yield cancel(watcher);
+}
+
 // All sagas to be loaded
 export default [
   getDataData,
   getPipelineDataData,
+  createDataCollectionData,
 ];

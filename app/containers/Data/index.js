@@ -11,7 +11,7 @@ import { createStructuredSelector } from 'reselect';
 import { fromJS } from 'immutable';
 import { Grid, Row, Col, ListGroup, ListGroupItem, FormGroup, FormControl, ControlLabel, Button, ButtonToolbar, Checkbox, Form, Modal, Table, Tabs, Tab, } from 'react-bootstrap';
 import makeSelectData from './selectors';
-import { getData, getPipelineData, } from './actions';
+import { getData, getPipelineData, createData } from './actions';
 
 export class Data extends React.Component { // eslint-disable-line react/prefer-stateless-function
   constructor(props) {
@@ -35,6 +35,11 @@ export class Data extends React.Component { // eslint-disable-line react/prefer-
           album: '',
         },
       },
+      newDataOptions: {
+        name: '',
+        numPerTask: 1,
+        randomOrder: false,
+      },
     };
     this.showCreationModal = this.showCreationModal.bind(this);
     this.hideCreationModal = this.hideCreationModal.bind(this);
@@ -44,13 +49,12 @@ export class Data extends React.Component { // eslint-disable-line react/prefer-
   componentWillMount() {
     this.props.getData();
   }
-  componentWillReceiveProps(nextProps) {
-    const nextTwitter = nextProps.Data.pipeline.crawlTwitter || {};
-    const curTwitter = this.props.Data.pipeline.crawlTwitter || {};
-
-    if (nextTwitter.url !== curTwitter.url) this.updatePipelineFields('crawlTwitter', 'results', nextTwitter.results.map((x) => x.tweet_text).join('\n'));
-  }
-
+  // componentWillReceiveProps(nextProps) {
+  //   const nextTwitter = nextProps.Data.pipeline.crawlTwitter || {};
+  //   const curTwitter = this.props.Data.pipeline.crawlTwitter || {};
+  //
+  //   if (nextTwitter.url !== curTwitter.url) this.updatePipelineFields('crawlTwitter', 'results', nextTwitter.results.map((x) => x.tweet_text).join('\n'));
+  // }
   showCreationModal() {
     this.setState({ showCreationModal: true });
   }
@@ -61,6 +65,48 @@ export class Data extends React.Component { // eslint-disable-line react/prefer-
     const state = this.state;
     state.pipelineFields[service][field] = val;
     this.setState(state);
+  }
+  setNewDataOptions(field, val) {
+    const state = this.state;
+    state.newDataOptions[field] = val;
+    this.setState(state);
+  }
+
+  createData(data) {
+    const { numPerTask, randomOrder } = this.state.newDataOptions;
+    const dataList = randomOrder ? this.shuffle(data) : data;
+    const taskDataCount = Math.floor(data.length / numPerTask);
+    const taskData = [];
+
+    for (let i = 0; i < taskDataCount; i++) {
+      taskData.push({ question_data: [] });
+      for (let j = 0; j < numPerTask; j++) {
+        taskData[i].question_data.push({
+          type: 'TEXT',
+          content: dataList[(i * numPerTask) + j],
+        });
+      }
+    }
+
+    const collection = {
+      name: this.state.newDataOptions.name,
+      task_data: taskData,
+    }
+
+    this.props.createData(collection);
+    this.hideCreationModal();
+  }
+
+
+  shuffle(input) {
+    const array = input;
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array;
   }
 
   render() {
@@ -150,7 +196,7 @@ export class Data extends React.Component { // eslint-disable-line react/prefer-
                   <FormControl componentClass="textarea" placeholder="json" />
                 </FormGroup>
               </Tab>
-              <Tab eventKey={2} title="Twitter">
+              <Tab eventKey={2} title="Search Twitter">
                 <h2>Step 1: Get tweets</h2>
                 <form>
                   <FormGroup controlId="hashtag">
@@ -189,8 +235,8 @@ export class Data extends React.Component { // eslint-disable-line react/prefer-
                 <h2>Step 2: Inspect result</h2>
                 <FormControl
                   componentClass="textarea"
-                  value={this.state.pipelineFields.crawlTwitter.results}
-                  onChange={(x) => this.updatePipelineFields('crawlTwitter', 'results', x.target.value)}
+                  readOnly
+                  value={this.props.Data.pipeline.crawlTwitter.results.map((x) => x.tweet_text).join('\n')}
                   placeholder="Results"
                 />
 
@@ -200,31 +246,131 @@ export class Data extends React.Component { // eslint-disable-line react/prefer-
                   <FormControl
                     type="text"
                     placeholder="Enter data collection name"
+                    value={this.state.newDataOptions.name}
+                    onChange={(e) => this.setNewDataOptions('name', e.target.value)}
                   />
                 </FormGroup>
                 <FormGroup controlId="number">
                   <ControlLabel>Number of tweets per task</ControlLabel>
                   <FormControl
                     type="number"
-                    placeholder="Number of tweets"
+                    placeholder="Number of tweets per task"
+                    value={this.state.newDataOptions.numPerTask}
+                    onChange={(e) => this.setNewDataOptions('numPerTask', e.target.value)}
                   />
                 </FormGroup>
-                <Checkbox>Randomize order</Checkbox>
+                <Checkbox value={false}>Randomize order</Checkbox>
+
+                <Modal.Footer>
+                  <Button bsStyle="danger" onClick={this.hideCreationModal}>Cancel</Button>
+                  <Button bsStyle="primary" onClick={() => this.createData(this.props.Data.pipeline.crawlTwitter.results.map((x) => x.tweet_text))}>Save</Button>
+                </Modal.Footer>
               </Tab>
-              <Tab eventKey={3} title="Flickr">
-                Tab 3 content
+
+
+              <Tab eventKey={3} title="Search Flickr">
+                <h2>Step 1: Get images</h2>
+                <form>
+                  <FormGroup controlId="tag">
+                    <ControlLabel>Tags</ControlLabel>
+                    <FormControl
+                      type="text"
+                      value={this.state.pipelineFields.crawlFlickr.hashtag}
+                      onChange={(x) => this.updatePipelineFields('crawlFlickr', 'tag', x.target.value)}
+                      placeholder="Enter tag"
+                    />
+                  </FormGroup>
+                  <FormGroup controlId="number">
+                    <ControlLabel>Number</ControlLabel>
+                    <FormControl
+                      type="number"
+                      value={this.state.pipelineFields.crawlFlickr.number}
+                      onChange={(x) => this.updatePipelineFields('crawlFlickr', 'number', x.target.value)}
+                      placeholder="Number of images"
+                    />
+                  </FormGroup>
+                </form>
+
+
+                <Button onClick={() => this.props.getPipelineData('crawlFlickr', this.state.pipelineFields.crawlFlickr)}>Get images</Button>
+
+                <h2>Step 2: Inspect result</h2>
+                <FormControl
+                  componentClass="textarea"
+                  readOnly
+                  value={this.props.Data.pipeline.crawlFlickr.results.map((x) => x.url).join('\n')}
+                  placeholder="Results"
+                />
+
+                <h2>Step 3: Data collection properties</h2>
+                <FormGroup controlId="name">
+                  <ControlLabel>Data collection name</ControlLabel>
+                  <FormControl
+                    type="text"
+                    placeholder="Enter data collection name"
+                    value={this.state.newDataOptions.name}
+                    onChange={(e) => this.setNewDataOptions('name', e.target.value)}
+                  />
+                </FormGroup>
+                <FormGroup controlId="number">
+                  <ControlLabel>Number of images per task</ControlLabel>
+                  <FormControl
+                    type="number"
+                    placeholder="Number of images per task"
+                    value={this.state.newDataOptions.numPerTask}
+                    onChange={(e) => this.setNewDataOptions('numPerTask', e.target.value)}
+                  />
+                </FormGroup>
+                <Checkbox value={false}>Randomize order</Checkbox>
+
+                <Modal.Footer>
+                  <Button bsStyle="danger" onClick={this.hideCreationModal}>Cancel</Button>
+                  <Button bsStyle="primary" onClick={() => this.createData(this.props.Data.pipeline.crawlFlickr.results.map((x) => x.url))}>Save</Button>
+                </Modal.Footer>
+
+
               </Tab>
-              <Tab eventKey={4} title="Imgur">
-                Tab 3 content
+              <Tab eventKey={4} title="Imgur Album">
+
+                <FormGroup controlId="tag">
+                  <ControlLabel>Album ID</ControlLabel>
+                  <FormControl
+                    type="text"
+                    value={this.state.pipelineFields.crawlImgur.album}
+                    onChange={(x) => this.updatePipelineFields('crawlImgur', 'album', x.target.value)}
+                    placeholder="Enter album ID"
+                  />
+                </FormGroup>
+
+                <Button onClick={() => this.props.getPipelineData('crawlImgur', this.state.pipelineFields.crawlImgur)}>Get images</Button>
+
+                <h2>Step 2: Inspect result</h2>
+                <FormControl
+                  componentClass="textarea"
+                  readOnly
+                  value={this.props.Data.pipeline.crawlImgur.results.map((x) => x.url).join('\n')}
+                  placeholder="Results"
+                />
+
+                <FormGroup controlId="name">
+                  <ControlLabel>Data collection name</ControlLabel>
+                  <FormControl
+                    type="text"
+                    placeholder="Enter data collection name"
+                    value={this.state.newDataOptions.name}
+                    onChange={(e) => this.setNewDataOptions('name', e.target.value)}
+                  />
+                </FormGroup>
+
+                <Modal.Footer>
+                  <Button bsStyle="danger" onClick={this.hideCreationModal}>Cancel</Button>
+                  <Button bsStyle="primary" onClick={() => this.createData(this.props.Data.pipeline.crawlImgur.results.map((x) => x.url))}>Save</Button>
+                </Modal.Footer>
               </Tab>
             </Tabs>
 
+            <p>{this.props.Data.error}</p>
           </Modal.Body>
-
-          <Modal.Footer>
-            <Button bsStyle="danger" onClick={this.hideCreationModal}>Cancel</Button>
-            <Button bsStyle="primary">Save</Button>
-          </Modal.Footer>
         </Modal>
       </div>
     );
@@ -234,6 +380,7 @@ export class Data extends React.Component { // eslint-disable-line react/prefer-
 Data.propTypes = {
   getData: PropTypes.func.isRequired,
   getPipelineData: PropTypes.func.isRequired,
+  createData: PropTypes.func.isRequired,
   Data: PropTypes.object.isRequired,
 };
 
@@ -248,6 +395,9 @@ function mapDispatchToProps(dispatch) {
     },
     getPipelineData: (service, params) => {
       dispatch(getPipelineData(service, params));
+    },
+    createData: (data) => {
+      dispatch(createData(data));
     },
     dispatch,
   };

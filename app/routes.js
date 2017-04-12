@@ -43,6 +43,8 @@ export default function createRoutes(store) {
       name: 'taskOverview',
       getComponent(nextState, cb) {
         const importModules = Promise.all([
+          import('containers/Data/reducer'),
+          import('containers/Data/sagas'),
           import('containers/TaskOverview/reducer'),
           import('containers/TaskOverview/sagas'),
           import('containers/TaskOverview'),
@@ -50,7 +52,9 @@ export default function createRoutes(store) {
 
         const renderRoute = loadModule(cb);
 
-        importModules.then(([reducer, sagas, component]) => {
+        importModules.then(([dataReducer, dataSagas, reducer, sagas, component]) => {
+          injectReducer('data', dataReducer.default);
+          injectSagas(dataSagas.default);
           injectReducer('taskOverview', reducer.default);
           injectSagas(sagas.default);
           renderRoute(component);

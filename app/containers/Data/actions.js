@@ -34,19 +34,22 @@ export function getDataError(error) {
   };
 }
 
-export function createData() {
+export function createData(data) {
   return {
     type: CREATE_DATA,
+    data,
   };
 }
-export function createDataSuccess() {
+export function createDataSuccess(data) {
   return {
     type: CREATE_DATA_SUCCESS,
+    data,
   };
 }
-export function createDataError() {
+export function createDataError(error) {
   return {
     type: CREATE_DATA_ERROR,
+    error,
   };
 }
 

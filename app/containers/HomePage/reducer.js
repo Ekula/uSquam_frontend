@@ -17,7 +17,7 @@ import {
 
 // The initial state of the App
 const initialState = fromJS({
-  username: '',
+  username: '58cea6fa0427244eac32c484',
 });
 
 function homeReducer(state = initialState, action) {

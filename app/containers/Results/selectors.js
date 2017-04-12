@@ -41,5 +41,5 @@ export {
   makeSelectResults,
   selectSessions,
   selectError,
-  makeSelectTaskOverview
+  makeSelectTaskOverview,
 };

@@ -10,8 +10,9 @@ import Helmet from 'react-helmet';
 import { fromJS } from 'immutable';
 import { createStructuredSelector } from 'reselect';
 import { Grid, Row, Col, ListGroup, ListGroupItem, FormGroup, FormControl, ControlLabel, HelpBlock, Checkbox, Button, ButtonToolbar, Form, Modal, Table, } from 'react-bootstrap';
-import makeSelectTaskOverview from './selectors';
+import{ makeSelectTaskOverview, makeSelectData } from './selectors';
 import { getTasks, createTask } from './actions';
+import { getData } from '../Data/actions';
 
 export class TaskOverview extends React.Component { // eslint-disable-line react/prefer-stateless-function
   constructor(props) {
@@ -26,6 +27,9 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
 
   componentWillMount() {
     this.props.getTasks();
+    if (this.props.Data.data.length === 0) {
+      this.props.getData();
+    }
   }
 
   updateTask(key, val) {
@@ -59,6 +63,7 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
         data_collection_id: '',
         reward: 10,
         time_indication: 1,
+        coordinates: undefined,
         questions: [
           {
             message: '',
@@ -137,6 +142,7 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
                   </Button>
                 </FormGroup>
 
+                {/*Todo: Select list of data collection names*/}
                 <FormGroup controlId="dataCollection">
                   <ControlLabel>Data collection</ControlLabel>
                   <FormControl
@@ -158,13 +164,24 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
                   <FormControl.Feedback />
                 </FormGroup>
 
-                <FormGroup controlId="reward" validationState={(selectedTask.time_indication <= 0) ? 'error' : 'success'} >
+                <FormGroup controlId="time indication" validationState={(selectedTask.time_indication <= 0) ? 'error' : 'success'} >
                   <ControlLabel>Time indication (min.)</ControlLabel>
                   <FormControl
                     type="number"
                     value={selectedTask.time_indication}
                     onChange={(x) => this.updateTask('time_indication', x.target.value)}
                     placeholder="Enter time indication"
+                  />
+                  <FormControl.Feedback />
+                </FormGroup>
+
+                <FormGroup controlId="coordinates" validationState={(selectedTask.coordinates && (selectedTask.coordinates.coordinates || selectedTask.coordinates).length !== 2) ? 'error' : 'success'} >
+                  <ControlLabel>Location (latitude, longitude)</ControlLabel>
+                  <FormControl
+                    type="string"
+                    value={selectedTask.coordinates ? (selectedTask.coordinates.coordinates || selectedTask.coordinates).join(', ') : ''}
+                    onChange={(x) => { this.updateTask('coordinates', x.target.value === '' ? undefined : x.target.value.split(',').map((n) => Number(n))); }}
+                    placeholder="latitude, longitude"
                   />
                   <FormControl.Feedback />
                 </FormGroup>
@@ -232,11 +249,14 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
 TaskOverview.propTypes = {
   getTasks: PropTypes.func.isRequired,
   createTask: PropTypes.func.isRequired,
+  getData: PropTypes.func.isRequired,
   TaskOverview: PropTypes.object.isRequired,
+  Data: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   TaskOverview: makeSelectTaskOverview(),
+  Data: makeSelectData(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -246,6 +266,9 @@ function mapDispatchToProps(dispatch) {
     },
     createTask: (task) => {
       dispatch(createTask(task));
+    },
+    getData: () => {
+      dispatch(getData());
     },
     dispatch,
   };

@@ -4,6 +4,7 @@ import { createSelector } from 'reselect';
  * Direct selector to the taskOverview state domain
  */
 const selectTaskOverviewDomain = () => (state) => state.get('taskOverview');
+const selectDataDomain = () => (state) => state.get('data');
 
 /**
  * Other specific selectors
@@ -17,6 +18,11 @@ const selectTasks = () => createSelector(
 const selectError = () => createSelector(
   selectTaskOverviewDomain,
   (state) => state.get('error')
+);
+
+const makeSelectData = () => createSelector(
+  selectDataDomain(),
+  (substate) => substate.toJS()
 );
 
 
@@ -34,4 +40,6 @@ export {
   selectTaskOverviewDomain,
   selectTasks,
   selectError,
+  makeSelectTaskOverview,
+  makeSelectData,
 };
