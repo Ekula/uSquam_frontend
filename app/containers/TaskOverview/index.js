@@ -10,6 +10,10 @@ import Helmet from 'react-helmet';
 import { fromJS } from 'immutable';
 import { createStructuredSelector } from 'reselect';
 import { Grid, Row, Col, ListGroup, ListGroupItem, FormGroup, FormControl, ControlLabel, HelpBlock, Checkbox, Button, ButtonToolbar, Form, Modal, Table, } from 'react-bootstrap';
+
+import Select from 'react-select';
+import 'react-select/dist/react-select.css';
+
 import{ makeSelectTaskOverview, makeSelectData } from './selectors';
 import { getTasks, createTask } from './actions';
 import { getData } from '../Data/actions';
@@ -79,6 +83,9 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
   render() {
     const { tasks, error } = this.props.TaskOverview;
     const selectedTask = this.state.selectedTask;
+
+    const dataOptions = this.props.Data.data.map((x) => ({ value: x._id['$oid'], label: x.name }));
+
     return (
       <div>
         <Helmet
@@ -142,13 +149,15 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
                   </Button>
                 </FormGroup>
 
-                {/*Todo: Select list of data collection names*/}
                 <FormGroup controlId="dataCollection">
                   <ControlLabel>Data collection</ControlLabel>
-                  <FormControl
-                    type="text"
+                  <Select
+                    name="select-task"
+                    options={dataOptions}
                     value={selectedTask.data_collection_id['$oid'] || selectedTask.data_collection_id }
-                    onChange={(x) => this.updateTask('data_collection_id', x.target.value)}
+                    onChange={(x) => this.updateTask('data_collection_id', x.value)}
+                    noResultsText="No data collections found"
+                    placeholder="Type or click here to select a data collection"
                   />
                   <FormControl.Feedback />
                 </FormGroup>
@@ -158,7 +167,7 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
                   <FormControl
                     type="number"
                     value={selectedTask.reward}
-                    onChange={(x) => this.updateTask('reward', x.target.value)}
+                    onChange={(x) => this.updateTask('reward', Number(x.target.value))}
                     placeholder="Enter reward"
                   />
                   <FormControl.Feedback />
@@ -169,7 +178,7 @@ export class TaskOverview extends React.Component { // eslint-disable-line react
                   <FormControl
                     type="number"
                     value={selectedTask.time_indication}
-                    onChange={(x) => this.updateTask('time_indication', x.target.value)}
+                    onChange={(x) => this.updateTask('time_indication', Number(x.target.value))}
                     placeholder="Enter time indication"
                   />
                   <FormControl.Feedback />
