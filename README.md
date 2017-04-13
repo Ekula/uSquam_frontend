@@ -1,3 +1,15 @@
+<h1>uSquam Frontend</h1>
+<h2>Procrastinate productively, anywhere and anytime</h2>
+The uSquam frontend makes use of React Boilerplate for the initial setup and React Bootstrap for its style.
+ 
+In order to connect to the uSquam Backend and Pipeline, a proxy needs to be set up in `app/config.js`. 
+
+A list of requirements is located in the `package.json` file. These are installed by executing `npm install`.
+To host the website locally, you can run `npm start` and to build the website for deployment, run `npm build`.
+
+
+
+<h3>Based on React Boilerplate:</h3>
 <img src="https://raw.githubusercontent.com/react-boilerplate/react-boilerplate-brand/master/assets/banner-metal-optimized.jpg" alt="react boilerplate banner" align="center" />
 
 <br />
